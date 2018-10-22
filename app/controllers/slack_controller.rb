@@ -11,7 +11,7 @@ class SlackController < ApplicationController
     response_url = params["response_url"]
     
     response = HTTParty.post(response_url, 
-    body: {"text" => "Hello, World FE!","response_type" => "in_channel"}.to_json,
+    body: {"text" => "Hello, World FE!", "response_type" => "in_channel"}.to_json,
     headers: {
       "Content-Type" => "application/json"
     }
@@ -25,7 +25,7 @@ class SlackController < ApplicationController
     when "new"
       create_game_url = "https://hangman-rails.herokuapp.com/games"
       backend_response = HTTParty.post(create_game_url, 
-        body: {"game_name"=>"#{entry}"}.to_json,
+        body: {"game_name"=>"#{entry}", "response_url"=>"#{response_url}" }.to_json,
         headers: {"Content-Type" => "application/json"}
       )
     when "join"
@@ -36,9 +36,6 @@ class SlackController < ApplicationController
     when "invite"
     when "help"
     end
-
-
-
 
   end
   
