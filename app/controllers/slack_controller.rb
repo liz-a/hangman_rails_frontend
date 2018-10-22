@@ -25,15 +25,16 @@ class SlackController < ApplicationController
     when "new"
       create_game_url = "https://hangman-rails.herokuapp.com/games"
       backend_response = HTTParty.post(create_game_url, 
-        body: {"game_name"=>"#{entry}", "response_url"=>"#{response_url}" }.to_json,
+        body: {"slack_id"=>"#{slack_id}", "game_name"=>"#{entry}", "response_url"=>"#{response_url}" }.to_json,
         headers: {"Content-Type" => "application/json"}
       )
 
       Rails.logger.info 'R' * 100
-      Rails.logger.info backend_response["id"].inspect
+      Rails.logger.info backend_response["game_id"].inspect
+      Rails.logger.info backend_response["player"].inspect
       Rails.logger.info 'R' * 100
 
-      game_id = backend_response["id"]
+      game_id = backend_response["game_id"]
 
 
       create_player_url = "https://hangman-rails.herokuapp.com/players"
