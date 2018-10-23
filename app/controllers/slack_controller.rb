@@ -18,7 +18,7 @@ class SlackController < ApplicationController
     slack_name = params["user_name"]
     text = params["text"].split(" ")
     command = text.shift
-    entry = text.join(" ")
+    entry = text.join(" ").upcase
 
     case command
     when "new"
@@ -75,19 +75,25 @@ class SlackController < ApplicationController
     game_id = guess_exists_response["game_id"]
 
     if guess_exists == 'false'
+
+      create_guess_url = "https://hangman-rails.herokuapp.com/guesses"
+      backend_response = HTTParty.post(create_guess_url, 
+      body: { "game_id"=>"#{game_id}", "guess"=>"#{entry}" }.to_json,
+      headers: {"Content-Type" => "application/json"}
+      )
+
+      guess_message = backend_response["guess_message"]
+      lives = backend_response["lives"]
+      word_display = backend_response["word_display"]
+      guessed_letters_display = backend_response["guessed_letters_display"]
+
       HTTParty.post(response_url, 
       {
-        body: {"text" => "MAKING GUESS #{guess_exists_response}, #{guess_exists}", "response_type" => "in_channel"}.to_json,
+        body: {"text" => "#{guess_message}\n#{word_display}\n#{lives}\n#{guessed_letters_display}", "response_type" => "in_channel"}.to_json,
         headers: {
           "Content-Type" => "application/json"
         }
       }
-      )
-
-      create_guess_url = "https://hangman-rails.herokuapp.com/guesses"
-      backend_response = HTTParty.post(create_guess_url, 
-        body: { "game_id"=>"#{game_id}", "guess"=>"#{entry}" }.to_json,
-        headers: {"Content-Type" => "application/json"}
       )
 
     else
