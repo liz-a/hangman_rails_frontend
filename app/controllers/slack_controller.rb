@@ -114,7 +114,6 @@ class SlackController < ApplicationController
       # )
 
 
-
     when "join"
     when "leave"
     when "score"
