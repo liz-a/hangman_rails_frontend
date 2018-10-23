@@ -67,13 +67,47 @@ class SlackController < ApplicationController
     end
 
     when "guess"
-      create_guess_url = "https://hangman-rails.herokuapp.com/guess"
-      backend_response = HTTParty.post(create_guess_url, 
-      body: {"slack_id"=>"#{slack_id}", "game_name"=>"#{entry}", "response_url"=>"#{response_url}" }.to_json,
-      headers: {"Content-Type" => "application/json"}
+
+    guess_exists_response = HTTParty.get("https://hangman-rails.herokuapp.com/guesses/exists/#{slack_id}/#{entry}")
+
+    guess_exists = guess_exists_response["guess_exists"]
+
+    game_id = guess_exists_response["game_id"]
+
+    if guess_exists == 'false'
+      HTTParty.post(response_url, 
+      {
+        body: {"text" => "MAKING GUESS #{guess_exists_response}, #{guess_exists}", "response_type" => "in_channel"}.to_json,
+        headers: {
+          "Content-Type" => "application/json"
+        }
+      }
       )
 
-      #if correct
+      create_guess_url = "https://hangman-rails.herokuapp.com/guesses"
+      backend_response = HTTParty.post(create_guess_url, 
+        body: { "game_id"=>"#{game_id}", "guess"=>"#{entry}" }.to_json,
+        headers: {"Content-Type" => "application/json"}
+      )
+
+    else
+      HTTParty.post(response_url, 
+      {
+        body: {"text" => "LETTER ALREADY PLAYED", "response_type" => "in_channel"}.to_json,
+        headers: {
+          "Content-Type" => "application/json"
+        }
+      }
+      )
+    end
+
+      # create_guess_url = "https://hangman-rails.herokuapp.com/guess"
+      # backend_response = HTTParty.post(create_guess_url, 
+      # body: {"slack_id"=>"#{slack_id}", "game_name"=>"#{entry}", "response_url"=>"#{response_url}" }.to_json,
+      # headers: {"Content-Type" => "application/json"}
+      # )
+
+
 
     when "join"
     when "leave"
