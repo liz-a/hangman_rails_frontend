@@ -5,7 +5,6 @@ class SlackController < ApplicationController
 
   def get_input
 
-
     response_url = params["response_url"]
     
     response = HTTParty.post(response_url, 
@@ -27,10 +26,6 @@ class SlackController < ApplicationController
     game_exists_response = HTTParty.get("https://hangman-rails.herokuapp.com/games/exists/#{entry}")
 
     game_exists = game_exists_response["game_exists"]
-
-    Rails.logger.info '*' * 100
-    Rails.logger.info game_exists.inspect
-    Rails.logger.info '*' * 100
 
     if game_exists == 'false'
 
