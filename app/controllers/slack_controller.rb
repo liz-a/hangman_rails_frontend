@@ -44,21 +44,18 @@ class SlackController < ApplicationController
       end
 
     when "guess"
-
-      if _.guess_exists?
-        if _.game_exists?
-          _.post_to_slack("Looks like you've already played that letter..")
-        else
-          _.post_to_slack("Ooops.. looks like the game you're guessing on doesn't exist")
-        end
+      if _.guess_exists? && _.game_exists? && !_.game_in_play?
+        _.post_game_over_message
+      elsif !_.guess_exists? && _.game_exists? && !_.game_in_play?
+        _.post_game_over_message
+      elsif _.guess_exists? && _.game_exists? 
+        _.post_to_slack("Looks like you've already played that letter..")
+      elsif !_.guess_exists? && _.game_exists? 
+        _.create_guess
+        _.post_guess_response_to_slack
       else
-          if _.game_exists?
-            _.create_guess
-            _.post_guess_response_to_slack
-          else
-            _.post_to_slack("Ooops.. looks like the game you're guessing on doesn't exist")
-          end
-        end
+        _.post_to_slack("Ooops.. looks like the game you're guessing on doesn't exist")
+      end
 
     end
 

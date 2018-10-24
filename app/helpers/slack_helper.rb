@@ -51,6 +51,7 @@ module SlackHelper
       @game_exists = game_exists_response["game_exists"]
       @game_status = game_exists_response["game_status"]
       @game_result = game_exists_response["game_result"]
+      @game_word = game_exists_response["game_word"]
       @game_exists == 'true' ? true : false
     end
 
@@ -60,6 +61,33 @@ module SlackHelper
 
     def game_won?
       @game_result == "1" ? true : false
+    end
+
+    def create_game_over_message
+      image = game_won? ? "" : get_hangman_url(0)
+      status = game_won? ? 'won' : 'lost'
+      @game_over_message = { 
+        text: "#{@slack_name}", 
+        response_type: "ephemeral", 
+        attachments: [ 
+          {
+            "title": "This game was #{status}. The word was #{@game_word}",
+            "image_url": "#{image}",
+          }   
+        ] 
+      }
+    end
+
+    def post_game_over_message
+      create_game_over_message
+      HTTParty.post(@response_url, 
+        {
+          body: @game_over_message.to_json,
+          headers: {
+            "Content-Type" => "application/json"
+          }
+        }
+      )
     end
 
     def player_exists?
