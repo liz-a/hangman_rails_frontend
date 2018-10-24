@@ -1,6 +1,8 @@
 require 'httparty'
+require 'pathname'
 
 class SlackController < ApplicationController
+  include ActionView::Helpers::AssetUrlHelper
   skip_before_action :verify_authenticity_token
 
   def get_input
@@ -88,24 +90,33 @@ class SlackController < ApplicationController
       guessed_letters_display = backend_response["guessed_letters_display"]
 
 
+      guesses = guessed_letters_display ? "Guessed Letters: #{guessed_letters_display}" : ""
 
-        message = { text: "#{slack_name}\n#{guess_message}\n#{word_display}\n#{lives}\n#{guessed_letters_display}", response_type: "in_channel", attachments: [ {
-          "title": "Weather for Sandpoint, ID",
-          "title_link": "http://www.wunderground.com/US/ID/Sandpoint.html",
-          "text": "Optional text that appears within the attachment",
+
+      hangman = asset_url("#{lives}.jpg")
+      # hangman = Pathname.new('/').relative_path_from(Pathname.new("../assets/images/hangmen")).to_s
+
+      Rails.logger.debug "£"
+      Rails.logger.debug hangman
+      Rails.logger.debug "£"
+
+        message = { text: "#{slack_name}", response_type: "in_channel", attachments: [ {
+          "title": "#{word_display}",
+          "image_url": "#{hangman}",
+          "text": "#{guesses}",
           "fields": [
+            {
+              "title": "#{}",
+              "value": "",
+              "short": false
+          },
               {
-                  "title": "Temp",
-                  "value": "68F",
+                  "title": "#{guess_message.downcase.capitalize}",
+                  "value": "",
                   "short": false
-              },
-      {
-        "title": "Wind",
-        "value": "16mph",
-        "short": false
-      }
-          ],
-          "image_url": "http://icons.wxug.com/i/c/k/clear.gif"
+              }
+
+          ]
       } ] }
 
 
@@ -115,11 +126,6 @@ class SlackController < ApplicationController
         headers: {
           "Content-Type" => "application/json"
         }
-        # attachments: [ 
-        #   { "image_url" => "https://cloud.netlifyusercontent.com/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/242ce817-97a3-48fe-9acd-b1bf97930b01/09-posterization-opt.jpg" } 
-        # ]
-        
-      
 
       }
       )
@@ -138,11 +144,6 @@ class SlackController < ApplicationController
     when "join"
 
       game_exists_response = HTTParty.get("https://hangman-rails.herokuapp.com/games/exists/#{entry}")
-
-
-      Rails.logger.debug "&" * 100
-      Rails.logger.debug game_exists_response
-      Rails.logger.debug "&" * 100
 
       game_exists = game_exists_response["game_exists"]
 
