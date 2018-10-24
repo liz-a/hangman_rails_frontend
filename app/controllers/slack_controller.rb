@@ -87,12 +87,40 @@ class SlackController < ApplicationController
       word_display = backend_response["word_display"]
       guessed_letters_display = backend_response["guessed_letters_display"]
 
+
+
+        message = { text: "#{slack_name}\n#{guess_message}\n#{word_display}\n#{lives}\n#{guessed_letters_display}", response_type: "in_channel", attachments: [ {
+          "title": "Weather for Sandpoint, ID",
+          "title_link": "http://www.wunderground.com/US/ID/Sandpoint.html",
+          "text": "Optional text that appears within the attachment",
+          "fields": [
+              {
+                  "title": "Temp",
+                  "value": "68F",
+                  "short": false
+              },
+      {
+        "title": "Wind",
+        "value": "16mph",
+        "short": false
+      }
+          ],
+          "image_url": "http://icons.wxug.com/i/c/k/clear.gif"
+      } ] }
+
+
       HTTParty.post(response_url, 
       {
-        body: {"text" => "#{guess_message}\n#{word_display}\n#{lives}\n#{guessed_letters_display}", "response_type" => "in_channel"}.to_json,
+        body: message.to_json,
         headers: {
           "Content-Type" => "application/json"
         }
+        # attachments: [ 
+        #   { "image_url" => "https://cloud.netlifyusercontent.com/assets/344dbf88-fdf9-42bb-adb4-46f01eedd629/242ce817-97a3-48fe-9acd-b1bf97930b01/09-posterization-opt.jpg" } 
+        # ]
+        
+      
+
       }
       )
 
@@ -106,13 +134,6 @@ class SlackController < ApplicationController
       }
       )
     end
-
-      # create_guess_url = "https://hangman-rails.herokuapp.com/guess"
-      # backend_response = HTTParty.post(create_guess_url, 
-      # body: {"slack_id"=>"#{slack_id}", "game_name"=>"#{entry}", "response_url"=>"#{response_url}" }.to_json,
-      # headers: {"Content-Type" => "application/json"}
-      # )
-
 
     when "join"
 
@@ -162,7 +183,6 @@ class SlackController < ApplicationController
         )
 
       end
-
 
     when "leave"
     when "score"
