@@ -115,6 +115,55 @@ class SlackController < ApplicationController
 
 
     when "join"
+
+      game_exists_response = HTTParty.get("https://hangman-rails.herokuapp.com/games/exists/#{entry}")
+
+
+      Rails.logger.debug "&" * 100
+      Rails.logger.debug game_exists_response
+      Rails.logger.debug "&" * 100
+
+      game_exists = game_exists_response["game_exists"]
+
+      game_id = game_exists_response["game_id"]
+
+      player_exists_response = HTTParty.get("https://hangman-rails.herokuapp.com/players/exists/#{slack_id}")
+
+      player_exists = player_exists_response["player_exists"]
+      player_id = player_exists_response["player_id"]
+
+      if game_exists == 'true'
+
+        if player_exists == 'true'
+          #update active game
+          update_player_url = "https://hangman-rails.herokuapp.com/players/#{player_id}"
+          HTTParty.put(update_player_url, 
+          body: {"slack_id"=>"#{slack_id}", "slack_name"=>"#{slack_name}", "game_id"=>"#{game_id}", "response_url"=>"#{response_url}" }.to_json,
+          headers: {"Content-Type" => "application/json"}
+          )
+        else
+          #create player
+          create_player_url = "https://hangman-rails.herokuapp.com/players"
+          HTTParty.post(create_player_url, 
+          body: {"slack_id"=>"#{slack_id}", "slack_name"=>"#{slack_name}", "game_id"=>"#{game_id}", "response_url"=>"#{response_url}" }.to_json,
+          headers: {"Content-Type" => "application/json"}
+          )
+        end
+
+      else
+
+        HTTParty.post(response_url, 
+        {
+          body: {"text" => "GAME DOES NOT EXIST", "response_type" => "in_channel"}.to_json,
+          headers: {
+            "Content-Type" => "application/json"
+          }
+        }
+        )
+
+      end
+
+
     when "leave"
     when "score"
     when "leaderboard"
