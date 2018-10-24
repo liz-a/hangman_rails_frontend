@@ -92,17 +92,29 @@ class SlackController < ApplicationController
 
       guesses = guessed_letters_display ? "Guessed Letters: #{guessed_letters_display}" : ""
 
+      
 
-      hangman = asset_url("#{lives}.jpg")
-      # hangman = Pathname.new('/').relative_path_from(Pathname.new("../assets/images/hangmen")).to_s
+      hangmen = [
+        "https://hangman-rails.herokuapp.com/assets/0-b750a79d1ba430e02b8f9d91a0acf2756dbb172a599f7f7a30ddfb16407d0cd6.jpg",
+        "https://hangman-rails.herokuapp.com/assets/1-81f2ae629bdbbfd515480419e089de6aa169be56966b0acd8b552631335e1978.jpg",
+        "https://hangman-rails.herokuapp.com/assets/2-b30c39df5cb6a82511a7341cddba6cbade8306f88c6af625975124887fdfb2e0.jpg",
+        "https://hangman-rails.herokuapp.com/assets/3-e8ab6e5dc52c071d50a734ca5eb3b152e405d1e571f123d8faa81ae203d6741d.jpg",
+        "https://hangman-rails.herokuapp.com/assets/4-fd2094a2e36842d772b3d38ae805a56adb398c2695f9848d5dc193eebc828efe.jpg",
+        "https://hangman-rails.herokuapp.com/assets/5-8d670615e57d7be3890d10523f27f5eff6671e9af349451bf303d87255838616.jpg",
+        "https://hangman-rails.herokuapp.com/assets/6-5bc14aa28c5bea4d3aba5e037233f1786676e193d3186eff5b95ab0adcf7801a.jpg",
+        "https://hangman-rails.herokuapp.com/assets/7-f5795929d0e3e19a497f412b4dc205b150e9c8501f011e73a24b594d37dcc518.jpg",
+        "https://hangman-rails.herokuapp.com/assets/8-1aa61a9e3b612c46f30b6a2122de53b653f56e62d19aa70b0bab62c274882836.jpg",
+        "https://hangman-rails.herokuapp.com/assets/9-aabb801a34c0fade0eccd50a9a937c82b5bd8d7cb7bf71827f84ca034f476251.jpg",
+        "https://hangman-rails.herokuapp.com/assets/10-c93aeec65266893174082c73bbe885f0b6f676a85ca739cbe52c1848b1aa8b6c.jpg",
+        "https://hangman-rails.herokuapp.com/assets/11-2046b079225138643e23b48307801151dad7bae0cc152471e50f7807278c0128.jpg",
+        "https://hangman-rails.herokuapp.com/assets/12-678ab4d7564d977561071cf7edf03ba1297140c87a71e3480eb61a23ad8903e1.jpg",
+        "https://hangman-rails.herokuapp.com/assets/13-62fa638acb2ba7748be8f28ac724f1856ac4b8a7672d96fad6ec4f6516bceebe.jpg"
+      ]
 
-      Rails.logger.debug "£"
-      Rails.logger.debug hangman
-      Rails.logger.debug "£"
 
         message = { text: "#{slack_name}", response_type: "in_channel", attachments: [ {
           "title": "#{word_display}",
-          "image_url": "#{hangman}",
+          "image_url": "#{hangmen[lives.to_i]}",
           "text": "#{guesses}",
           "fields": [
             {
