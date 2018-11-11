@@ -1,4 +1,5 @@
 require 'httparty'
+require 'slack_send'
 
 module SlackHelper
 
@@ -113,14 +114,16 @@ module SlackHelper
     end
 
     def post_to_slack(message)
-      HTTParty.post(@response_url, 
-        {
-          body: {"text" => "#{message}", "response_type" => "in_channel"}.to_json,
-          headers: {
-            "Content-Type" => "application/json"
-          }
-        }
-      )
+      SlackSend::Messenger.send_msg(message, @response_url, "in_channel")
+      # HTTParty.post(@response_url, 
+      #   {
+      #     body: {"text" => "#{message}", "response_type" => "in_channel"}.to_json,
+      #     headers: {
+      #       "Content-Type" => "application/json"
+
+      #     }
+      #   }
+      # )
     end
 
     def post_guess_response_to_slack

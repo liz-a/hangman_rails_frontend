@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/liz-a/slack_send
+  revision: 0f37a3ba1c9efd4f3a031794d46bf1f4f0631ab5
+  specs:
+    slack_send (0.0.1)
+      httparty
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -208,6 +215,7 @@ DEPENDENCIES
   rails (~> 5.2.1)
   sass-rails (~> 5.0)
   selenium-webdriver
+  slack_send (~> 0.0.1)!
   spring
   spring-watcher-listen (~> 2.0.0)
   turbolinks (~> 5)
@@ -219,4 +227,4 @@ RUBY VERSION
    ruby 2.5.1p57
 
 BUNDLED WITH
-   1.16.2
+   1.16.6
